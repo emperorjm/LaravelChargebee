@@ -9,7 +9,7 @@
         "Cashier",
         "Subscription"
     ],
-    "homepage": "https://github.com/TijmenWierenga/LaravelChargebee",
+    "homepage": "https://github.com/emperorjm/LaravelChargebee",
     "license": "MIT",
     "authors": [
         {
@@ -34,12 +34,12 @@
     },
     "autoload": {
         "psr-4": {
-            "TijmenWierenga\\LaravelChargebee\\": "src"
+            "emperorjm\\LaravelChargebee\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "TijmenWierenga\\LaravelChargebee\\Test\\": "tests"
+            "emperorjm\\LaravelChargebee\\Test\\": "tests"
         }
     },
     "scripts": {
