@@ -23,7 +23,7 @@ If you haven't got an account on Chargebee, create one [here](https://www.charge
 Then require the package into your project via Composer:
 
 ``` bash
-$ composer require tijmen-wierenga/laravel-chargebee
+$ composer require emperorjm/laravel-chargebee
 ```
 
 Next, register the service provider in `config/app.php`:
