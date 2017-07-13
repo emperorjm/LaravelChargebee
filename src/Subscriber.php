@@ -327,7 +327,7 @@
          *
          * @return object
          */
-        private function retrieveSubscription() {
+        public function retrieveSubscription() {
             // Adrian: Get user subscription details from the database
             $subscription = Subscription::where('user_id', $this->model->id)
                                 ->where('plan_id', $this->plan)
