@@ -4,6 +4,7 @@
     use ChargeBee_Environment;
     use ChargeBee_HostedPage;
     use ChargeBee_Subscription;
+    use ChargeBee_Customer; // Adrian (2017-07-16): Needed to update Billing info
     use Illuminate\Database\Eloquent\Model;
     use TijmenWierenga\LaravelChargebee\Exceptions\MissingPlanException;
     use TijmenWierenga\LaravelChargebee\Exceptions\UserMismatchException;
@@ -52,11 +53,18 @@
         private $coupon = null;
 
         /**
+         * The user object from the database based on the plan_id
+         *
+         * @var JSON
+         */
+        private $user;
+
+
+        /**
          * @param Model|null $model
          * @param null $plan
          */
-        public function __construct(Model $model = null, $plan = null, array $config = null)
-        {
+        public function __construct(Model $model = null, $plan = null, array $config = null) {
             // Set up Chargebee environment keys
             ChargeBee_Environment::configure(getenv('CHARGEBEE_SITE'), getenv('CHARGEBEE_KEY'));
 
@@ -66,6 +74,11 @@
 
             // Set config settings.
             $this->config = ($config) ? : $this->getDefaultConfig();
+
+            // Adrian: Get user subscription details from the database
+            $this->user = Subscription::where('user_id', $this->model->id)
+                                ->where('plan_id', $this->plan)
+                                ->first();
         }
 
         /**
@@ -329,11 +342,37 @@
          */
         public function retrieveSubscription() {
             // Adrian: Get user subscription details from the database
-            $subscription = Subscription::where('user_id', $this->model->id)
+            /**$subscription = Subscription::where('user_id', $this->model->id)
                                 ->where('plan_id', $this->plan)
-                                ->first();
+                                ->first();**/
 
-            $result = ChargeBee_Subscription::retrieve($subscription->subscription_id);
+            $result = ChargeBee_Subscription::retrieve($this->user->subscription_id);
+
+            return $result;
+        }
+
+        /**
+         * Author: Adrian Thompson
+         * Date: 2017-07-16
+         * Updates the Billing Address for a customer. 
+         *
+         * @param
+         * @return JSON
+         */
+        public function updateBillingInfo($customer_id, $billing_addr_params) {
+            try {
+                $result = ChargeBee_Customer::updateBillingInfo($customer_id, $billing_addr_params);
+                //$jsonResponse = array("forward" => "/ssp-php/subscription");
+                //print json_encode($jsonResponse, true);
+            }
+            catch(ChargeBee_InvalidRequestException $e) {
+                handleInvalidRequestErrors($e);
+                $result = false;
+            }
+            catch (Exception $e) {
+                handleGeneralErrors($e);
+                $result = false;
+            }
 
             return $result;
         }
