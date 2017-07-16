@@ -210,9 +210,9 @@
          * @param $plan
          * @return null
          */
-        public function swap(Subscription $subscription, $plan)
+        public function swap($subscription_id, $plan)
         {
-            return ChargeBee_Subscription::update($subscription->subscription_id, [
+            return ChargeBee_Subscription::update($subscription_id, [
                 'plan_id' => $plan
             ])->subscription();
         }
@@ -223,10 +223,10 @@
          * @param Subscription $subscription
          * @return null
          */
-        public function cancel(Subscription $subscription, $cancelImmediately = false)
+        public function cancel($subscription_id, $cancelImmediately = false)
         {
             // TODO: Check if subscription is active or in trial
-            return ChargeBee_Subscription::cancel($subscription->subscription_id, [
+            return ChargeBee_Subscription::cancel($subscription_id, [
                 'end_of_term' => ! $cancelImmediately
             ])->subscription();
         }
@@ -237,9 +237,9 @@
          * @param Subscription $subscription
          * @return null
          */
-        public function resume(Subscription $subscription)
+        public function resume($subscription_id)
         {
-            return ChargeBee_Subscription::removeScheduledCancellation($subscription->subscription_id)->subscription();
+            return ChargeBee_Subscription::removeScheduledCancellation($subscription_id)->subscription();
         }
 
         /**
@@ -248,10 +248,10 @@
          * @param Subscription $subscription
          * @return null
          */
-        public function reactivate(Subscription $subscription)
+        public function reactivate($subscription_id)
         {
             // TODO: Check if subscription is cancelled
-            return ChargeBee_Subscription::reactivate($subscription->subscription_id)->subscription();
+            return ChargeBee_Subscription::reactivate($subscription_id)->subscription();
         }
 
         /**
