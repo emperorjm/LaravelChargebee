@@ -5,11 +5,12 @@
     use ChargeBee_HostedPage;
     use ChargeBee_Subscription;
     use ChargeBee_Customer; // Adrian (2017-07-16): Needed to update Billing info
+    use ChargeBee_Invoice; // Adrian (2017-07-16): Needed to get invoices
     use Illuminate\Database\Eloquent\Model;
     use TijmenWierenga\LaravelChargebee\Exceptions\MissingPlanException;
     use TijmenWierenga\LaravelChargebee\Exceptions\UserMismatchException;
     use Illuminate\Support\Facades\DB;
-    use App\Models\Subscription;
+    use Illuminate\Http\RedirectResponse;
 
     /**
      * Class Subscriber
@@ -375,5 +376,40 @@
             }
 
             return $result;
+        }
+
+        /**
+         * Author: Adrian Thompson
+         * Date: 2017-07-16
+         * Updates the Billing Address for a customer. 
+         *
+         * @param
+         * @return JSON
+         */
+        public function getInvoices() {
+            $result = ChargeBee_Invoice::invoicesForSubscription($this->user->subscription_id, array("limit" => 20));
+
+            return $result;
+        }
+
+        /**
+         * Author: Adrian Thompson
+         * Date: 2017-07-16
+         * Returns pdf download url for the requested invoice
+         *
+         * @param
+         * @return URL
+         */
+        public function downloadInvoice($id) {
+            $invoice = ChargeBee_Invoice::retrieve($id)->invoice();
+
+            // Adrian: Prevent a user from downloading an invoice that's not theirs
+            if($invoice->subscriptionId != $this->user->subscription_id) {
+                return false;
+            }
+
+            $result = ChargeBee_Invoice::pdf($id);
+
+            return $result->download()->downloadUrl;
         }
     }
